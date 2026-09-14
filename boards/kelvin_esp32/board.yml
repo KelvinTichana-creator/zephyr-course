@@ -1,0 +1,6 @@
+board:
+  name: kelvin_esp32
+  full_name: DOIT ESP32-DevKit-V1
+  vendor: others
+  socs:
+    - name: esp32
