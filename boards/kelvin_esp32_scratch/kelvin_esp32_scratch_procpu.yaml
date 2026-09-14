@@ -1,0 +1,9 @@
+identifier: kelvin_esp32_scratch/esp32/procpu
+name: Kelvin ESP32 Scratch Board
+type: mcu
+arch: xtensa
+toolchain:
+  - zephyr
+  - xtools
+testing:
+  timeout_multiplier: 2

@@ -1,0 +1,6 @@
+board:
+  name: kelvin_esp32_scratch
+  full_name: Kelvin ESP32 Scratch Board
+  vendor: others
+  socs:
+    - name: esp32
