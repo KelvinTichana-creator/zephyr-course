@@ -3,6 +3,8 @@
 #include <zephyr/kernel.h>
 #include <zephyr/sys/printk.h>
 
+#include "led_sensor.h"
+
 int main(void)
 {
     const struct device *dev = DEVICE_DT_GET_ANY(kelvin_led_sensor);
@@ -19,7 +21,16 @@ int main(void)
         return 0;
     }
 
-    printk("L6 Task 1: LED sensor ready\n");
+    printk("L6 Task 2: LED sensor ready\n");
+
+    /* Custom extension API */
+    ret = led_sensor_set_state(dev, true);
+    if (ret < 0) {
+        printk("led_sensor_set_state() failed: %d\n", ret);
+        return 0;
+    }
+
+    printk("Custom API: LED ON\n");
 
     while (1) {
         ret = sensor_sample_fetch(dev);

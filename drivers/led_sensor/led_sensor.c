@@ -94,3 +94,18 @@ static DEVICE_API(sensor, led_sensor_api) = {
                           &led_sensor_api);
 
 DT_INST_FOREACH_STATUS_OKAY(LED_SENSOR_DEFINE)
+int led_sensor_set_state(const struct device *dev, bool state)
+{
+	const struct led_sensor_config *config = dev->config;
+	struct led_sensor_data *data = dev->data;
+
+	int ret = gpio_pin_set_dt(&config->led, state);
+
+	if (ret < 0) {
+		return ret;
+	}
+
+	data->led_on = state;
+
+	return 0;
+}

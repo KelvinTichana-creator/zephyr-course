@@ -2,9 +2,7 @@
     aliases {
         app-led = &blue_led;
     };
-};
 
-/ {
     led_sensor: led_sensor {
         compatible = "kelvin,led-sensor";
         led-gpios = <&gpio0 2 GPIO_ACTIVE_HIGH>;
