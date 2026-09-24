@@ -1,0 +1,8 @@
+menuconfig LED_SENSOR
+    bool "Simple LED sensor driver"
+    default y
+    depends on DT_HAS_KELVIN_LED_SENSOR_ENABLED
+    select GPIO
+    select SENSOR
+    help
+      Enable the simple on-board LED sensor driver.

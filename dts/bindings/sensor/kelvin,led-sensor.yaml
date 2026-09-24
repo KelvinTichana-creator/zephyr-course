@@ -1,0 +1,8 @@
+description: Simple on-board LED sensor driver
+
+compatible: "kelvin,led-sensor"
+
+properties:
+  led-gpios:
+    type: phandle-array
+    required: true
