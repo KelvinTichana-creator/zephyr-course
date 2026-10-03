@@ -1,8 +1,14 @@
+#include <errno.h>
+#include <stdbool.h>
+#include <stdlib.h>
+
 #include <zephyr/device.h>
 #include <zephyr/drivers/sensor.h>
 #include <zephyr/kernel.h>
 #include <zephyr/shell/shell.h>
 #include <zephyr/sys/printk.h>
+
+#include "led_sensor.h"
 
 static const struct device *sensor_dev = DEVICE_DT_GET_ANY(kelvin_led_sensor);
 
@@ -76,15 +82,69 @@ static int cmd_sensor_info(const struct shell *sh,
     return 0;
 }
 
+static int cmd_sensor_set(const struct shell *sh,
+                          size_t argc,
+                          char **argv)
+{
+    ARG_UNUSED(argc);
+
+    if (sensor_dev == NULL) {
+        shell_error(sh, "LED sensor device not found");
+        return -ENODEV;
+    }
+
+    char *endptr;
+    long value = strtol(argv[1], &endptr, 10);
+
+    if (*argv[1] == '\0' || *endptr != '\0') {
+        shell_error(sh, "value must be 0 or 1");
+        return -EINVAL;
+    }
+
+    if (value < 0 || value > 1) {
+        shell_error(sh, "value out of range: use 0 or 1");
+        return -ERANGE;
+    }
+
+    int ret = led_sensor_set_state(sensor_dev, value != 0);
+
+    if (ret < 0) {
+        shell_error(sh, "led_sensor_set_state() failed: %d", ret);
+        return ret;
+    }
+
+    shell_print(sh, "LED state set to %ld", value);
+
+    return 0;
+}
+
 SHELL_STATIC_SUBCMD_SET_CREATE(
     sensor_cmds,
-    SHELL_CMD(fetch, NULL, "Call sensor_sample_fetch()", cmd_sensor_fetch),
-    SHELL_CMD(read, NULL, "Call sensor_channel_get()", cmd_sensor_read),
-    SHELL_CMD(info, NULL, "Show sensor device information", cmd_sensor_info),
+    SHELL_CMD(fetch,
+              NULL,
+              "Call sensor_sample_fetch()",
+              cmd_sensor_fetch),
+    SHELL_CMD(read,
+              NULL,
+              "Call sensor_channel_get()",
+              cmd_sensor_read),
+    SHELL_CMD(info,
+              NULL,
+              "Show sensor device information",
+              cmd_sensor_info),
+    SHELL_CMD_ARG(set,
+                  NULL,
+                  "Set LED state: 0 = OFF, 1 = ON",
+                  cmd_sensor_set,
+                  2,
+                  0),
     SHELL_SUBCMD_SET_END
 );
 
-SHELL_CMD_REGISTER(sensor, &sensor_cmds, "LED sensor commands", NULL);
+SHELL_CMD_REGISTER(sensor,
+                   &sensor_cmds,
+                   "LED sensor commands",
+                   NULL);
 
 int main(void)
 {
@@ -98,8 +158,8 @@ int main(void)
         return 0;
     }
 
-    printk("L7 Task 1: LED sensor shell ready\n");
-    printk("Use: sensor fetch, sensor read, sensor info\n");
+    printk("L7 Task 2: LED sensor shell ready\n");
+    printk("Commands: sensor fetch, sensor read, sensor info, sensor set <0|1>\n");
 
     return 0;
 }
